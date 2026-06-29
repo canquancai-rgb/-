@@ -1,0 +1,438 @@
+export type Tab = "home" | "order" | "mall" | "orders" | "member";
+
+export type ProductAction = "combo" | "breakfast";
+
+export type Product = {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  tags: string[];
+  desc: string;
+  action?: ProductAction;
+  soldOut?: boolean;
+};
+
+export type ComboOption = {
+  id: string;
+  name: string;
+  add: number;
+  image: string;
+  tag?: string;
+};
+
+export type MallProduct = {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  tags: string[];
+  soldOut?: boolean;
+};
+
+export type HomeQuickEntry = {
+  id: string;
+  title: string;
+  sub: string;
+  image: string;
+  target: "order" | "mall" | "member";
+};
+
+export type HomeContent = {
+  heroImage: string;
+  heroEyebrow: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  quickEntries: HomeQuickEntry[];
+  projectTitle: string;
+  projectStatus: string;
+  storeSectionTitle: string;
+  storeImage: string;
+};
+
+export type StoreContent = {
+  name: string;
+  distance: string;
+  businessHours: string;
+  closedMessage: string;
+};
+
+export type MemberContent = {
+  userName: string;
+  level: string;
+  levelEn: string;
+  greeting: string;
+  progressCurrent: number;
+  progressTarget: number;
+  upgradeText: string;
+  validUntil: string;
+  benefits: Array<{ id: string; title: string; value: string }>;
+  settings: string[];
+};
+
+export type SampleOrderItem = {
+  id: string;
+  name: string;
+  spec: string;
+  price: number;
+  qty: number;
+  image: string;
+};
+
+export type SampleOrder = {
+  storeName: string;
+  storeAddress: string;
+  orderTime: string;
+  status: string;
+  pickupNo: string;
+  orderNo: string;
+  payment: string;
+  phone: string;
+  remark: string;
+  items: SampleOrderItem[];
+};
+
+export type MallContent = {
+  heroImage: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  tabs: string[];
+  products: MallProduct[];
+};
+
+export type ComboContent = {
+  title: string;
+  basePrice: number;
+  tags: string[];
+  giftName: string;
+  giftImage: string;
+  options: ComboOption[];
+};
+
+export type BreakfastContent = {
+  title: string;
+  subtitle: string;
+  heroImage: string;
+  coffee: Product[];
+  bakery: Product[];
+};
+
+export type GridContent = {
+  brandName: string;
+  store: StoreContent;
+  home: HomeContent;
+  categories: string[];
+  productsByCategory: Record<string, Product[]>;
+  combo: ComboContent;
+  breakfast: BreakfastContent;
+  mall: MallContent;
+  member: MemberContent;
+  sampleOrder: SampleOrder;
+  orderBanners: string[];
+};
+
+export const asset = (name: string) => `${import.meta.env.BASE_URL}assets/${name}`;
+
+const categories = [
+  "咖啡餐搭",
+  "冷萃系列",
+  "热卖TOP",
+  "咸系列",
+  "经典美式",
+  "经典奶咖",
+  "PRO 系列",
+  "假手冲™",
+  "无因咖啡",
+  "其他饮品",
+  "甜品系列",
+  "简餐系列",
+  "烘焙点心",
+  "瓶装饮品",
+  "周边零售",
+];
+
+const productsByCategory: Record<string, Product[]> = {
+  咖啡餐搭: [
+    {
+      id: "breakfast",
+      name: "超值早餐",
+      price: 9,
+      image: asset("banner-breakfast.jpg"),
+      tags: ["多款烘焙", "限时供应"],
+      desc: "早餐限定，买咖啡面包自由选",
+      action: "breakfast",
+    },
+    {
+      id: "combo-double",
+      name: "依云冷萃双杯组合",
+      price: 62,
+      image: asset("p-coldbrew-combo.jpg"),
+      tags: ["新品", "限时供应", "编辑推荐"],
+      desc: "购买天生冷萃套餐赠送 1 个「时间的诗」骰子盲盒。赠品共 3 款，随机赠送 1 款",
+      action: "combo",
+    },
+    {
+      id: "combo-star",
+      name: "依云冷萃明星套组",
+      price: 49.3,
+      originalPrice: 56,
+      image: asset("p-coldbrew-combo.jpg"),
+      tags: ["新品", "限时供应", "编辑推荐"],
+      desc: "现购买依云冷萃明星套组，限时享受特惠套餐价",
+    },
+    {
+      id: "coldbrew-lightmeal",
+      name: "冷萃低脂餐搭组合",
+      price: 58,
+      image: asset("p-bread-sourdough.jpg"),
+      tags: ["限时供应", "低脂轻盈"],
+      desc: "低因轻食搭配冷萃，清爽负担更低",
+    },
+  ],
+  冷萃系列: [
+    {
+      id: "combo-double-cold",
+      name: "依云冷萃双杯组合",
+      price: 62,
+      image: asset("p-coldbrew-combo.jpg"),
+      tags: ["新品", "限时供应", "编辑推荐"],
+      desc: "购买天生冷萃套餐赠送 1 个「时间的诗」骰子盲盒。赠品共 3 款，随机赠送 1 款",
+      action: "combo",
+    },
+    {
+      id: "combo-star-cold",
+      name: "依云冷萃明星套组",
+      price: 49.3,
+      originalPrice: 56,
+      image: asset("p-coldbrew-combo.jpg"),
+      tags: ["新品", "限时供应", "编辑推荐"],
+      desc: "限时享受特惠套餐价",
+    },
+  ],
+  热卖TOP: [
+    {
+      id: "roman",
+      name: "罗马人美式",
+      price: 26,
+      image: asset("p-roman-americano.jpg"),
+      tags: ["无糖浆添加"],
+      desc: "意式浓缩和柠檬搭配的人气美式，2 支单一产地咖啡豆可选",
+    },
+    {
+      id: "whitebutter",
+      name: "白脱拿铁",
+      price: 32,
+      image: asset("p-white-butter-latte.jpg"),
+      tags: ["D1", "无糖浆添加", "浓郁配比"],
+      desc: "炭烧可可香耶加雪菲，搭配黄油牛乳，口感如太妃糖丝滑",
+    },
+    {
+      id: "salty-latte",
+      name: "咸奶萃",
+      price: 34,
+      image: asset("p-salty-latte.jpg"),
+      tags: ["无糖浆添加", "浓郁配比"],
+      desc: "当日冷萃注入自研咸芝士牛乳，芝香咸趣，2 支单一产地咖啡豆可选",
+    },
+    {
+      id: "oat-latte",
+      name: "燕麦拿铁",
+      price: 28,
+      image: asset("p-white-butter-latte.jpg"),
+      tags: ["无糖浆添加"],
+      desc: "燕麦与意式浓缩的平衡奶咖",
+    },
+  ],
+  经典美式: [
+    {
+      id: "americano",
+      name: "美式",
+      price: 24,
+      image: asset("p-americano.jpg"),
+      tags: ["无糖"],
+      desc: "经典美式，2 支单一产地咖啡豆可选",
+    },
+    {
+      id: "roman-classic",
+      name: "罗马人美式",
+      price: 26,
+      image: asset("p-roman-americano.jpg"),
+      tags: ["无糖浆添加"],
+      desc: "意式浓缩和柠檬搭配的人气美式，2 支单一产地咖啡豆可选",
+    },
+    {
+      id: "salt-americano",
+      name: "盐美式",
+      price: 28,
+      image: asset("p-salt-americano.jpg"),
+      tags: ["D1", "无糖浆添加"],
+      desc: "单一产地意式浓缩注入盐汽水，佐以柠檬片，低卡健康的气泡型美式",
+    },
+    {
+      id: "blackbeard",
+      name: "黑胡子美式",
+      price: 28,
+      image: asset("p-salty-latte.jpg"),
+      tags: ["L3", "无糖", "堂食限定"],
+      desc: "意式浓缩与冰块打发，风味厚实",
+    },
+  ],
+  咸系列: [],
+  经典奶咖: [],
+  "PRO 系列": [],
+  "假手冲™": [],
+  无因咖啡: [],
+  其他饮品: [],
+  甜品系列: [],
+  简餐系列: [],
+  烘焙点心: [],
+  瓶装饮品: [],
+  周边零售: [],
+};
+
+const comboOptions: ComboOption[] = [
+  { id: "evian-alps", name: "依云 x 阿尔卑斯冰息冷萃", add: 2, image: asset("p-roman-americano.jpg"), tag: "D1" },
+  { id: "evian-foam", name: "依云 x 冰息冷萃维也纳", add: 6, image: asset("p-white-butter-latte.jpg") },
+  { id: "evian-yega", name: "依云 x 耶加冷萃", add: 2, image: asset("p-roman-americano.jpg") },
+  { id: "evian-guoding", name: "依云 x 果丁冷萃", add: 2, image: asset("p-roman-americano.jpg"), tag: "L3" },
+  { id: "evian-moon", name: "依云 x 月光冷萃维也纳", add: 8, image: asset("p-white-butter-latte.jpg"), tag: "D1" },
+  { id: "evian-natural", name: "依云 x 冰息冷萃维也纳", add: 8, image: asset("p-white-butter-latte.jpg"), tag: "D1" },
+];
+
+const breakfastCoffee: Product[] = [
+  productsByCategory.热卖TOP[0],
+  productsByCategory.经典美式[0],
+  { ...productsByCategory.热卖TOP[1], id: "latte-breakfast", name: "拿铁", price: 28 },
+  productsByCategory.热卖TOP[1],
+];
+
+const breakfastBakery: Product[] = [
+  {
+    id: "sourdough",
+    name: "低脂酸种杂粮面包",
+    price: 9,
+    originalPrice: 16,
+    image: asset("p-bread-sourdough.jpg"),
+    tags: ["新品", "不额外加糖", "低脂轻盈"],
+    desc: "酸种发酵口感柔韧，谷物杂粮醇香递进，不额外添加糖，低脂健康心选",
+  },
+  {
+    id: "maritozzo-tea",
+    name: "马里托佐·如意宝茶味",
+    price: 9,
+    originalPrice: 48,
+    image: asset("p-maritozzo-tea.jpg"),
+    tags: ["进口原料", "季节限定"],
+    desc: "南非如意宝茶甘甜柔润，独特的清香与丝滑奶油夹入松软面包",
+  },
+  {
+    id: "maritozzo-pistachio",
+    name: "马里托佐·开心果牛乳味",
+    price: 9,
+    originalPrice: 20,
+    image: asset("p-maritozzo-pistachio.jpg"),
+    tags: ["进口原料", "季节限定"],
+    desc: "浓郁开心果酱和经典牛乳双拼呈现，松软面包夹入丝滑奶油",
+  },
+];
+
+const mallProducts: MallProduct[] = [
+  { id: "l48", name: "L48 秘鲁 库斯科", price: 198, image: asset("mall-l48.jpg"), tags: ["冷萃咖啡豆", "浅烘", "250g"] },
+  { id: "w41", name: "W41 埃塞俄比亚 哈罗哈亚", price: 198, image: asset("mall-w41.jpg"), tags: ["手冲咖啡豆", "浅烘"] },
+  { id: "capsule-yega", name: "埃塞俄比亚 耶加雪菲 胶囊咖啡", price: 78, image: asset("mall-capsule-yirgacheffe.jpg"), tags: ["中深烘", "5g*10个"] },
+  { id: "capsule-kenya", name: "肯尼亚 基安布 胶囊咖啡", price: 88, image: asset("mall-capsule-kenya.jpg"), tags: ["日式深烘", "5g*10个"], soldOut: true },
+  { id: "yunnan", name: "中国云南挂耳特辑", price: 128, image: asset("mall-yunnan-box.jpg"), tags: ["C41 & C17", "10g*10包"] },
+  { id: "d1", name: "D1 埃塞俄比亚 耶加雪菲", price: 118, image: asset("mall-l3-bag.jpg"), tags: ["意式咖啡豆", "中深烘"] },
+  { id: "l3", name: "L3 埃塞俄比亚 果丁丁", price: 148, image: asset("mall-l3-bag.jpg"), tags: ["意式咖啡豆", "中浅烘", "250g"] },
+  { id: "d3", name: "D3 肯尼亚 基安布", price: 148, image: asset("mall-l3-bag.jpg"), tags: ["意式咖啡豆", "日式深烘", "250g"], soldOut: true },
+  { id: "ethiopia-set", name: "埃塞俄比亚挂耳特辑", price: 118, image: asset("mall-ethiopia-box.jpg"), tags: ["D1 & L3", "10g*10包"] },
+  { id: "dark-set", name: "深度烘焙挂耳特辑", price: 118, image: asset("mall-dark-box.jpg"), tags: ["D1 & D3", "10g*10包"] },
+];
+
+export const defaultContent: GridContent = {
+  brandName: "GridCoffee",
+  store: {
+    name: "成都来福士首层店",
+    distance: "4.2 km",
+    businessHours: "07:00-21:30",
+    closedMessage: "抱歉，本店已打烊",
+  },
+  home: {
+    heroImage: asset("home-hero-bg.jpg"),
+    heroEyebrow: "天生冷萃季 II",
+    heroTitle: "天生冷萃季 II",
+    heroSubtitle: "携手 evian 共同呈现",
+    quickEntries: [
+      { id: "mall", title: "线上商城", sub: "胶囊咖啡", image: asset("mall-capsule-yirgacheffe.jpg"), target: "mall" },
+      { id: "gift", title: "礼品卡", sub: "天生冷萃季", image: asset("banner-coldbrew-natural.jpg"), target: "mall" },
+      { id: "group", title: "多杯团餐", sub: "10杯起", image: asset("p-coldbrew-combo.jpg"), target: "order" },
+      { id: "charge", title: "充值有礼", sub: "新人掏金", image: asset("mall-l48.jpg"), target: "member" },
+    ],
+    projectTitle: "六月产地来信",
+    projectStatus: "已开放预订",
+    storeSectionTitle: "探索更多门店",
+    storeImage: asset("order-detail-qr.jpg"),
+  },
+  categories,
+  productsByCategory,
+  combo: {
+    title: "依云冷萃双杯组合",
+    basePrice: 62,
+    tags: ["限时供应", "编辑推荐"],
+    giftName: "「时间的诗」骰子盲盒",
+    giftImage: asset("order-detail-qr.jpg"),
+    options: comboOptions,
+  },
+  breakfast: {
+    title: "+ ¥9 起\n早餐任意搭",
+    subtitle: "早餐限定，买咖啡面包自由选",
+    heroImage: asset("banner-breakfast.jpg"),
+    coffee: breakfastCoffee,
+    bakery: breakfastBakery,
+  },
+  mall: {
+    heroImage: asset("mall-hero-capsule.jpg"),
+    heroTitle: "胶囊系列正式登场",
+    heroSubtitle: "经典深烘 门店同款",
+    tabs: ["首页", "咖啡豆", "咖啡周边", "谷物零食"],
+    products: mallProducts,
+  },
+  member: {
+    userName: "Grid Coffee 好友",
+    level: "普通会员",
+    levelEn: "Basic Member",
+    greeting: "欢迎你来",
+    progressCurrent: 74,
+    progressTarget: 200,
+    upgradeText: "还需消费126元可升至黄金会员，解锁现制饮品 9 折等优惠",
+    validUntil: "2027/02/09",
+    benefits: [
+      { id: "balance", title: "储值卡余额", value: "¥ 0" },
+      { id: "coupons", title: "优惠卡券", value: "0 张" },
+      { id: "gift", title: "礼品卡", value: "0 张" },
+      { id: "physical", title: "实体卡", value: "0 张" },
+    ],
+    settings: ["合并开票", "地址管理", "权限管理", "用户协议", "了解更多", "联系我们"],
+  },
+  sampleOrder: {
+    storeName: "南京万象天地店",
+    storeAddress: "江苏省南京市秦淮区中山南路666号万象天地C馆 L170店铺",
+    orderTime: "2026-02-09 14:09",
+    status: "已完成",
+    pickupNo: "GC0502",
+    orderNo: "1010690012813865",
+    payment: "微信支付 ¥74",
+    phone: "130****8563",
+    remark: "-",
+    items: [
+      { id: "order-whitebutter", image: asset("p-white-butter-latte.jpg"), name: "大康宝蓝 PRO", spec: "冰 10oz | 到店制作", price: 36, qty: 1 },
+      { id: "order-americano", image: asset("p-americano.jpg"), name: "秘鲁 维拉瑞卡", spec: "热 10oz", price: 38, qty: 1 },
+    ],
+  },
+  orderBanners: [
+    asset("banner-coldbrew-natural.jpg"),
+    asset("banner-coldbrew-upgrade.jpg"),
+    asset("banner-breakfast.jpg"),
+  ],
+};
