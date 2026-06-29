@@ -17,6 +17,7 @@ import {
   User,
   WalletCards,
 } from "lucide-react";
+import type { CloudSettings, CloudStatus } from "./cloud";
 import { asset, type ComboOption, type GridContent, type MallProduct, type Product } from "./data";
 
 type AdminSection = "dashboard" | "home" | "products" | "combo" | "mall" | "orders" | "member" | "data";
@@ -24,8 +25,19 @@ type AdminSection = "dashboard" | "home" | "products" | "combo" | "mall" | "orde
 type AdminAppProps = {
   content: GridContent;
   setContent: React.Dispatch<React.SetStateAction<GridContent>>;
+  cloud: CloudControls;
   onPreview: () => void;
   onReset: () => void;
+};
+
+type CloudControls = {
+  settings: CloudSettings;
+  setSettings: React.Dispatch<React.SetStateAction<CloudSettings>>;
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+  status: CloudStatus;
+  onPull: () => Promise<void>;
+  onPublish: () => Promise<void>;
 };
 
 const imageChoices = [
@@ -65,7 +77,7 @@ const adminNav: Array<{ key: AdminSection; label: string; icon: React.ReactNode;
   { key: "data", label: "数据备份", icon: <FileText size={16} />, group: "文件中心" },
 ];
 
-function AdminApp({ content, setContent, onPreview, onReset }: AdminAppProps) {
+function AdminApp({ content, setContent, cloud, onPreview, onReset }: AdminAppProps) {
   const [section, setSection] = useState<AdminSection>("dashboard");
   const pageTab = getPageTab(section);
   const groupedNav = useMemo(() => {
@@ -128,7 +140,7 @@ function AdminApp({ content, setContent, onPreview, onReset }: AdminAppProps) {
           {section === "mall" && <MallManager content={content} setContent={setContent} />}
           {section === "orders" && <OrdersManager content={content} setContent={setContent} />}
           {section === "member" && <MemberManager content={content} setContent={setContent} />}
-          {section === "data" && <DataManager content={content} setContent={setContent} onReset={onReset} />}
+          {section === "data" && <DataManager content={content} setContent={setContent} cloud={cloud} onReset={onReset} />}
         </div>
       </section>
     </main>
@@ -151,7 +163,7 @@ function Dashboard({ content, onJump }: { content: GridContent; onJump: (section
   return (
     <div className="admin-stack">
       <section className="admin-panel">
-        <SectionTitle title="本地还原后台" subtitle="当前数据只保存在这个项目和浏览器本地存储，不会写入线上 OGS 后台。" />
+        <SectionTitle title="本地还原后台" subtitle="当前修改先保存在浏览器本地，可在数据备份里发布到线上点单页。" />
         <div className="admin-stats">
           {stats.map((stat) => (
             <div key={stat.label} className="admin-stat">
@@ -863,9 +875,14 @@ function MemberManager({ content, setContent }: Pick<AdminAppProps, "content" | 
   );
 }
 
-function DataManager({ content, setContent, onReset }: Pick<AdminAppProps, "content" | "setContent" | "onReset">) {
+function DataManager({ content, setContent, cloud, onReset }: Pick<AdminAppProps, "content" | "setContent" | "cloud" | "onReset">) {
   const [draft, setDraft] = useState(JSON.stringify(content, null, 2));
   const [status, setStatus] = useState("可复制 JSON 作为本地备份。");
+  const cloudBusy = cloud.status.state === "loading" || cloud.status.state === "publishing";
+
+  const updateCloudSettings = (patch: Partial<CloudSettings>) => {
+    cloud.setSettings((current) => ({ ...current, ...patch }));
+  };
 
   const importDraft = () => {
     try {
@@ -879,6 +896,38 @@ function DataManager({ content, setContent, onReset }: Pick<AdminAppProps, "cont
 
   return (
     <div className="admin-stack">
+      <section className="admin-panel">
+        <SectionTitle title="线上同步" subtitle="发布后，点单页面会读取同一份线上数据。" />
+        <div className="admin-form-grid">
+          <Field label="GitHub 用户">
+            <input value={cloud.settings.owner} onChange={(event) => updateCloudSettings({ owner: event.target.value })} />
+          </Field>
+          <Field label="仓库">
+            <input value={cloud.settings.repo} onChange={(event) => updateCloudSettings({ repo: event.target.value })} />
+          </Field>
+          <Field label="发布分支">
+            <input value={cloud.settings.branch} onChange={(event) => updateCloudSettings({ branch: event.target.value })} />
+          </Field>
+          <Field label="数据文件">
+            <input value={cloud.settings.path} onChange={(event) => updateCloudSettings({ path: event.target.value })} />
+          </Field>
+          <Field label="GitHub 写入令牌" wide>
+            <input
+              type="password"
+              autoComplete="off"
+              value={cloud.token}
+              onChange={(event) => cloud.setToken(event.target.value)}
+              placeholder="Fine-grained token: Contents Read and write"
+            />
+          </Field>
+        </div>
+        <div className="data-actions">
+          <button disabled={cloudBusy} onClick={cloud.onPull}>从线上读取</button>
+          <button disabled={cloudBusy} onClick={cloud.onPublish}>发布当前数据到线上</button>
+        </div>
+        <p className={`admin-note sync-${cloud.status.state}`}>{cloud.status.message}</p>
+        <p className="admin-note">令牌只保存在当前浏览器，用于把后台修改写入 GitHub Pages 数据文件。</p>
+      </section>
       <section className="admin-panel">
         <SectionTitle title="数据备份" subtitle="导出或导入的都是本地还原项目数据。" />
         <div className="data-actions">

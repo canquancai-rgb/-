@@ -2229,10 +2229,28 @@ img {
   margin-bottom: 10px;
 }
 
+.data-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .admin-note {
   margin: 0 0 12px;
   color: #64748b;
   font-size: 13px;
+}
+
+.admin-note.sync-ready {
+  color: #047857;
+}
+
+.admin-note.sync-error {
+  color: #be123c;
+}
+
+.admin-note.sync-loading,
+.admin-note.sync-publishing {
+  color: #1d4ed8;
 }
 
 .json-editor {

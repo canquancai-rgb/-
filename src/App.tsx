@@ -29,6 +29,13 @@ import {
   Wifi,
 } from "lucide-react";
 import AdminApp from "./AdminApp";
+import {
+  defaultCloudSettings,
+  loadCloudContent,
+  publishCloudContent,
+  type CloudSettings,
+  type CloudStatus,
+} from "./cloud";
 import { defaultContent, type GridContent, type Product, type Tab } from "./data";
 
 type Overlay = "combo" | "breakfast" | "orderDetail" | null;
@@ -36,8 +43,50 @@ type Workspace = "admin" | "preview";
 
 function App() {
   const [content, setContent] = useLocalState<GridContent>("grid-content", defaultContent);
+  const [cloudSettings, setCloudSettings] = useLocalState<CloudSettings>("grid-cloud-settings", defaultCloudSettings);
+  const [githubToken, setGithubToken] = useLocalState("grid-github-token", "");
+  const [cloudStatus, setCloudStatus] = useState<CloudStatus>({
+    state: "idle",
+    message: "准备同步线上数据。",
+  });
   const requestedWorkspace = getRequestedWorkspace();
   const [workspace, setWorkspace] = useState<Workspace>(requestedWorkspace ?? "preview");
+
+  const pullCloudContent = React.useCallback(
+    async (visible = true) => {
+      if (visible) setCloudStatus({ state: "loading", message: "正在读取线上数据..." });
+
+      try {
+        const remoteContent = await loadCloudContent();
+        setContent(remoteContent);
+        setCloudStatus({ state: "ready", message: "已读取线上数据，点单页会使用最新内容。" });
+      } catch (error) {
+        setCloudStatus({
+          state: "error",
+          message: error instanceof Error ? error.message : "读取线上数据失败，当前使用本地数据。",
+        });
+      }
+    },
+    [setContent],
+  );
+
+  const publishToCloud = React.useCallback(async () => {
+    setCloudStatus({ state: "publishing", message: "正在发布到线上数据文件..." });
+
+    try {
+      await publishCloudContent(cloudSettings, githubToken, content);
+      setCloudStatus({ state: "ready", message: "已发布到线上。客人刷新点单页后会看到最新内容。" });
+    } catch (error) {
+      setCloudStatus({
+        state: "error",
+        message: error instanceof Error ? error.message : "发布失败，请检查 GitHub 令牌和网络。",
+      });
+    }
+  }, [cloudSettings, content, githubToken]);
+
+  React.useEffect(() => {
+    void pullCloudContent(false);
+  }, [pullCloudContent]);
 
   React.useEffect(() => {
     if (requestedWorkspace && workspace !== requestedWorkspace) setWorkspace(requestedWorkspace);
@@ -48,6 +97,15 @@ function App() {
       <AdminApp
         content={content}
         setContent={setContent}
+        cloud={{
+          settings: cloudSettings,
+          setSettings: setCloudSettings,
+          token: githubToken,
+          setToken: setGithubToken,
+          status: cloudStatus,
+          onPull: () => pullCloudContent(),
+          onPublish: publishToCloud,
+        }}
         onPreview={() => setWorkspace("preview")}
         onReset={() => setContent(defaultContent)}
       />
