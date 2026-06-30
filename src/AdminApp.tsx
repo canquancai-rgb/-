@@ -917,7 +917,7 @@ function DataManager({ content, setContent, cloud, onReset }: Pick<AdminAppProps
               autoComplete="off"
               value={cloud.token}
               onChange={(event) => cloud.setToken(event.target.value)}
-              placeholder="Fine-grained token: Contents Read and write"
+              placeholder="Fine-grained token: Contents + Pages Read and write"
             />
           </Field>
         </div>
@@ -926,7 +926,7 @@ function DataManager({ content, setContent, cloud, onReset }: Pick<AdminAppProps
           <button disabled={cloudBusy} onClick={cloud.onPublish}>发布当前数据到线上</button>
         </div>
         <p className={`admin-note sync-${cloud.status.state}`}>{cloud.status.message}</p>
-        <p className="admin-note">令牌只保存在当前浏览器，用于把后台修改写入 GitHub Pages 数据文件。</p>
+        <p className="admin-note">令牌只保存在当前浏览器，用于写入 GitHub Pages 数据文件并触发页面重建。</p>
       </section>
       <section className="admin-panel">
         <SectionTitle title="数据备份" subtitle="导出或导入的都是本地还原项目数据。" />

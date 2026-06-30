@@ -58,6 +58,8 @@ export async function publishCloudContent(
     }),
   });
 
+  await triggerPagesBuild(normalized, token);
+
   return result.content?.html_url ?? `https://github.com/${normalized.owner}/${normalized.repo}`;
 }
 
@@ -90,6 +92,22 @@ async function githubRequest<T>(url: string, token: string, init: RequestInit = 
   }
 
   return (await response.json()) as T;
+}
+
+async function triggerPagesBuild(settings: CloudSettings, token: string) {
+  const url = `https://api.github.com/repos/${encodeURIComponent(settings.owner)}/${encodeURIComponent(
+    settings.repo,
+  )}/pages/builds`;
+
+  try {
+    await githubRequest<{ status?: string }>(url, token, { method: "POST" });
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? `内容已写入，但触发 GitHub Pages 构建失败：${error.message}`
+        : "内容已写入，但触发 GitHub Pages 构建失败。",
+    );
+  }
 }
 
 function parseGithubError(errorText: string, status: number) {
